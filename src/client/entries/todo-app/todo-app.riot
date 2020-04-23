@@ -8,10 +8,12 @@
     </li>
   </ul>
 
+  <button onclick={ onCreateTodoClick }>Create Todo</button>
+
   <script type="ts">
     import {RiotComponentExport} from 'riot';
     import {TodoModel} from '../../../server/models/todo-model';
-    import {getTodos} from './api';
+    import {getTodos, createTodo} from './api';
 
     interface State {
       todos: TodoModel[];
@@ -29,9 +31,21 @@
 
         onBeforeMount(): void {
           getTodos()
-          .then(todos => {
-            this.update({
-              todos: todos
+            .then(todos => {
+              this.update({
+                todos: todos
+              });
+            });
+        },
+
+        onCreateTodoClick(): void {
+          console.log('onCreateTodoClick');
+          createTodo('Test').then(todoId => {
+            console.log(todoId);
+            getTodos().then(todos => {
+              this.update({
+                todos: todos
+              });
             });
           });
         }

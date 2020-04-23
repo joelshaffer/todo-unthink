@@ -1,7 +1,18 @@
 import { ResourceBase } from './resource-base';
-import { resource, get, template, TemplateResponse, RedirectResponse, ApiResponse, CookieResponse } from 'resource-decorator';
+import {
+  resource,
+  get,
+  post,
+  template,
+  TemplateResponse,
+  RedirectResponse,
+  ApiResponse,
+  CookieResponse,
+  body
+} from 'resource-decorator';
 import {TodoModel} from '../models/todo-model';
 
+let _autoInc = 0;
 const _allTodos: TodoModel[] = [
   new TodoModel({
     id: 0,
@@ -27,7 +38,23 @@ export class TodoResource extends ResourceBase {
   @get({
     path: '/api/todo'
   })
-  async getMessage(): Promise<ApiResponse | CookieResponse | void> {
+  async getTodos(): Promise<ApiResponse | CookieResponse | void> {
     return new ApiResponse(_allTodos);
+  }
+
+  @post({
+    path: '/api/todo'
+  })
+  async postTodo(@body() model: Partial<TodoModel>): Promise<ApiResponse | CookieResponse | void>  {
+    const result = new TodoModel({
+      id:_autoInc,
+      title:model.title,
+      completed: false
+    });
+
+    _allTodos.push(result);
+    ++_autoInc;
+
+    return new ApiResponse({id: result.id});
   }
 }

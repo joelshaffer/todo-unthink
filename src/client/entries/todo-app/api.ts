@@ -12,3 +12,20 @@ export async function getTodos(): Promise<TodoModel[]> {
 
   return (await  response.json()).map((record: Record<string, unknown>) => new TodoModel(record));
 }
+
+export async function createTodo(title: string): Promise<Record<string, unknown>> {
+  const response = await window.fetch(
+    '/api/todo',
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        title: title
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+
+  return (await response.json());
+}
