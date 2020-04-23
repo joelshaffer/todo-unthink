@@ -42,3 +42,15 @@ export async function updateTodo(todo: TodoModel): Promise<void> {
     }
   );
 }
+
+export async function deleteTodo(todo: TodoModel): Promise<void> {
+  await window.fetch(
+    `/api/todo/${todo.id}`,
+    {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+}

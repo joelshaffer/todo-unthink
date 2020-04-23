@@ -8,12 +8,12 @@ import {
   RedirectResponse,
   ApiResponse,
   CookieResponse,
-  body, put, path, ResourceNotFound
+  body, put, path, ResourceNotFound, del
 } from 'resource-decorator';
 import {TodoModel} from '../models/todo-model';
 
 let _autoInc = 2;
-const _allTodos: TodoModel[] = [
+let _allTodos: TodoModel[] = [
   new TodoModel({
     id: 0,
     title: 'First Item',
@@ -68,7 +68,6 @@ export class TodoResource extends ResourceBase {
     for (let i = 0; i < _allTodos.length; ++i) {
       const todo = _allTodos[i] as TodoModel;
       if (todo.id === parseInt(id)) {
-        this.log.error(todo);
 
         Object.assign(todo, model);
         _allTodos[i] = todo;
@@ -80,5 +79,29 @@ export class TodoResource extends ResourceBase {
     if (matchedId === -1) {
       throw new ResourceNotFound();
     }
+  }
+
+  @del({
+    path: '/api/todo/:todo_id'
+  })
+  async deleteTodo(@path('todo_id') id: string): Promise<ApiResponse | CookieResponse | void>  {
+
+    let matchedPos = -1;
+
+    for (let i = 0; i < _allTodos.length; ++i) {
+      const todo = _allTodos[i] as TodoModel;
+      if (todo.id === parseInt(id)) {
+        this.log.error(id);
+        _allTodos[i] = todo;
+        matchedPos = i;
+        break;
+      }
+    }
+
+    if (matchedPos === -1) {
+      throw new ResourceNotFound();
+    }
+
+    _allTodos = _allTodos.filter(obj => obj !== _allTodos[matchedPos]);
   }
 }
