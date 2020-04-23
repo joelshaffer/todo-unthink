@@ -8,7 +8,9 @@
     </li>
   </ul>
 
+  <input onkeyup="{ updateTitle }" type="text" value={state.todoTitle}/>
   <button onclick={ onCreateTodoClick }>Create Todo</button>
+
 
   <script type="ts">
     import {RiotComponentExport} from 'riot';
@@ -17,6 +19,7 @@
 
     interface State {
       todos: TodoModel[];
+      todoTitle: string;
     }
 
     interface TodoApp extends RiotComponentExport<never, State> {
@@ -26,7 +29,8 @@
     function build(): TodoApp {
       return {
         state: {
-          todos: []
+          todos: [],
+          todoTitle: ''
         },
 
         onBeforeMount(): void {
@@ -39,14 +43,19 @@
         },
 
         onCreateTodoClick(): void {
-          console.log('onCreateTodoClick');
-          createTodo('Test').then(todoId => {
+          createTodo(this.state.todoTitle).then(todoId => {
             console.log(todoId);
             getTodos().then(todos => {
               this.update({
                 todos: todos
               });
             });
+          });
+        },
+
+        updateTitle(e: InputEvent): void {
+          this.update({
+            todoTitle: (e.target as HTMLInputElement).value
           });
         }
       };
