@@ -1,0 +1,49 @@
+<todo-app>
+
+  <h1>Things to Do</h1>
+
+  <ul>
+    <li each={ todo in state.todos }>
+      {todo.title}
+    </li>
+  </ul>
+
+  <script type="ts">
+    import {RiotComponentExport} from 'riot';
+    import {TodoModel} from '../../../server/models/todo-model';
+    import {getTodos} from './api';
+
+    interface State {
+      todos: TodoModel[];
+    }
+
+    interface TodoApp extends RiotComponentExport<never, State> {
+      state: State;
+    }
+
+    function build(): TodoApp {
+      return {
+        state: {
+          todos: []
+        },
+
+        onBeforeMount(): void {
+          getTodos()
+          .then(todos => {
+            this.update({
+              todos: todos
+            });
+          });
+        }
+      };
+    }
+
+    export default build;
+  </script>
+
+  <style type="scss">
+    :host {
+      display: block;
+    }
+  </style>
+</todo-app>
