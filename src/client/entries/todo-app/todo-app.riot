@@ -4,7 +4,7 @@
 
   <ul>
     <li each={ todo in state.todos }>
-      {todo.title}
+      {todo.title} <button onclick={ onEditTodoClick }>Edit</button>
     </li>
   </ul>
 
@@ -15,7 +15,7 @@
   <script type="ts">
     import {RiotComponentExport} from 'riot';
     import {TodoModel} from '../../../server/models/todo-model';
-    import {getTodos, createTodo} from './api';
+    import {getTodos, createTodo, updateTodo} from './api';
 
     interface State {
       todos: TodoModel[];
@@ -57,7 +57,16 @@
           this.update({
             todoTitle: (e.target as HTMLInputElement).value
           });
-        }
+        },
+
+        async onEditTodoClick(): Promise<void> {
+          await updateTodo(this.state.todos[0]);
+          getTodos().then(todos => {
+            this.update({
+              todos: todos
+            });
+          });
+        },
       };
     }
 

@@ -29,3 +29,16 @@ export async function createTodo(title: string): Promise<Record<string, unknown>
 
   return (await response.json());
 }
+
+export async function updateTodo(todo: TodoModel): Promise<void> {
+  await window.fetch(
+    `/api/todo/${todo.id}`,
+    {
+      method: 'PUT',
+      body: JSON.stringify(todo),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+}

@@ -8,11 +8,11 @@ import {
   RedirectResponse,
   ApiResponse,
   CookieResponse,
-  body
+  body, put, path, ResourceNotFound
 } from 'resource-decorator';
 import {TodoModel} from '../models/todo-model';
 
-let _autoInc = 0;
+let _autoInc = 2;
 const _allTodos: TodoModel[] = [
   new TodoModel({
     id: 0,
@@ -56,5 +56,29 @@ export class TodoResource extends ResourceBase {
     ++_autoInc;
 
     return new ApiResponse({id: result.id});
+  }
+
+  @put({
+    path: '/api/todo/:todo_id'
+  })
+  async putTodo(@path('todo_id') id: string, @body() model: Partial<TodoModel>): Promise<ApiResponse | CookieResponse | void>  {
+
+    let matchedId = -1;
+
+    for (let i = 0; i < _allTodos.length; ++i) {
+      const todo = _allTodos[i] as TodoModel;
+      if (todo.id === parseInt(id)) {
+        this.log.error(todo);
+
+        Object.assign(todo, model);
+        _allTodos[i] = todo;
+        matchedId = todo.id;
+        break;
+      }
+    }
+
+    if (matchedId === -1) {
+      throw new ResourceNotFound();
+    }
   }
 }
