@@ -43,9 +43,9 @@ export async function updateTodo(todo: TodoModel): Promise<void> {
   );
 }
 
-export async function deleteTodo(todo: TodoModel): Promise<void> {
+export async function deleteTodo(todoId: string): Promise<void> {
   await window.fetch(
-    `/api/todo/${todo.id}`,
+    `/api/todo/${todoId}`,
     {
       method: 'DELETE',
       headers: {
