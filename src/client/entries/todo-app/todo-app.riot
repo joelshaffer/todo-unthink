@@ -4,7 +4,7 @@
 
   <ul>
     <li each={ todo in state.todos }>
-      {todo.title} <button onclick={ onEditTodoClick }>Edit</button> <button value="{todo.id}" onclick={ onDeleteTodoClick }>Delete</button>
+      <input onkeyup="{ onEditTodoClick }" type="text" id=`title-{todo.id}` value={todo.title}/>  <button value="{todo.id}" onclick={ onDeleteTodoClick }>Delete</button>
     </li>
   </ul>
 
@@ -59,8 +59,12 @@
           });
         },
 
-        async onEditTodoClick(): Promise<void> {
-          await updateTodo(this.state.todos[0]);
+        async onEditTodoClick(e: InputEvent): Promise<void> {
+
+          const newTitle = (e.target as HTMLInputElement).value;
+          const todoId = parseInt((e.target as HTMLInputElement).id.split('-')[1]);
+
+          await updateTodo(new TodoModel({title: newTitle, id:todoId}));
           getTodos().then(todos => {
             this.update({
               todos: todos
@@ -69,7 +73,6 @@
         },
 
         async onDeleteTodoClick(e: InputEvent): Promise<void> {
-          console.log((e.target as HTMLInputElement).value);
           await deleteTodo((e.target as HTMLInputElement).value);
           getTodos().then(todos => {
             this.update({
