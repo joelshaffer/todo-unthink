@@ -29,17 +29,11 @@
           title: ''
         },
 
-        onMounted(currentProps: Props, currentState: State): void {
-          console.log(currentProps);
-          console.log(currentState);
-        },
-
         onDeleteClicked(): void {
           this.props.onDeleted(this.props.id);
         },
 
         onCompleteChange(event: InputEvent): void {
-          console.log((event.target as HTMLInputElement).checked);
           this.props.onEdited(this.props.title, this.props.id, (event.target as HTMLInputElement).checked);
         },
 
