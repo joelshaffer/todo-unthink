@@ -2,20 +2,24 @@
 
   <h1>Things to Do</h1>
 
-  <ul>
-    <li each={ todo in state.todos }>
-      <input onkeyup="{ onEditTodoClick }" type="text" id=`title-{todo.id}` value={todo.title}/>  <button value="{todo.id}" onclick={ onDeleteTodoClick }>Delete</button>
-    </li>
-  </ul>
+  <todo-item
+      each={ item in state.todos }
+      id={ item.id }
+      title={ item.title }
+      complete={ item.completed }
+      on-deleted={ onDeleteTodo }
+      on-edited={ onTodoEdited }
+  />
 
   <input onkeyup="{ updateTitle }" type="text" value={state.todoTitle}/>
-  <button onclick={ onCreateTodoClick }>Create Todo</button>
+  <button onclick={ onCreateTodo }>Create Todo</button>
 
 
   <script type="ts">
     import {RiotComponentExport} from 'riot';
     import {TodoModel} from '../../../server/models/todo-model';
     import {getTodos, createTodo, updateTodo, deleteTodo} from './api';
+    import TodoItem from '../../components/todo-item.riot';
 
     interface State {
       todos: TodoModel[];
@@ -42,7 +46,7 @@
             });
         },
 
-        onCreateTodoClick(): void {
+        onCreateTodo(): void {
           createTodo(this.state.todoTitle).then(todoId => {
             console.log(todoId);
             getTodos().then(todos => {
@@ -59,12 +63,8 @@
           });
         },
 
-        async onEditTodoClick(e: InputEvent): Promise<void> {
-
-          const newTitle = (e.target as HTMLInputElement).value;
-          const todoId = parseInt((e.target as HTMLInputElement).id.split('-')[1]);
-
-          await updateTodo(new TodoModel({title: newTitle, id:todoId}));
+        async onDeleteTodo(id: string): Promise<void> {
+          await deleteTodo(id);
           getTodos().then(todos => {
             this.update({
               todos: todos
@@ -72,17 +72,26 @@
           });
         },
 
-        async onDeleteTodoClick(e: InputEvent): Promise<void> {
-          await deleteTodo((e.target as HTMLInputElement).value);
+        async onTodoEdited(title: string, todoId: string, completed: boolean): Promise<void> {
+
+          const newTitle = title;
+          const id = parseInt(todoId);
+
+          await updateTodo(new TodoModel({title: newTitle, id:id, completed: completed}));
           getTodos().then(todos => {
             this.update({
               todos: todos
             });
           });
         },
+
 
       };
     }
+
+    build.components = {
+      TodoItem
+    };
 
     export default build;
   </script>
@@ -90,6 +99,18 @@
   <style type="scss">
     :host {
       display: block;
+    }
+    input[type=checkbox] {
+      margin-right: 1rem;
+    }
+    input[type=text] {
+      font-size: 1rem;
+      margin-right: 1rem;
+      margin-bottom: 1rem;
+    }
+    input[type=button] {
+      font-size: 1rem;
+      padding: 0.25rem;
     }
   </style>
 </todo-app>

@@ -1,0 +1,58 @@
+<todo-item>
+   <div class="todo-item">
+     <input type="checkbox"
+            onchange={ onCompleteChange }
+            checked={props.complete}/>
+     <input onkeyup="{ onTitleChange }" type="text" id=`title-{props.id}` value={props.title}/>  <button onclick={ onDeleteClicked }>Delete</button>
+   </div>
+
+  <script type="ts">
+    import { RiotComponentExport } from 'riot';
+    interface Props {
+      id: string;
+      title: string;
+      complete: boolean;
+      onEdited: (title: string, todoId: string, complete: boolean) => void;
+      onDeleted: (id: string) => void;
+    }
+    interface State {
+      title: string;
+    }
+    interface TodoItem extends RiotComponentExport<Props, State> {
+      state: State;
+      onCompleteChange(event: InputEvent): void;
+      onDeleteClicked(): void;
+    }
+    function build(): TodoItem {
+      return {
+        state: {
+          title: ''
+        },
+
+        onMounted(currentProps: Props, currentState: State): void {
+          console.log(currentProps);
+          console.log(currentState);
+        },
+
+        onDeleteClicked(): void {
+          this.props.onDeleted(this.props.id);
+        },
+
+        onCompleteChange(event: InputEvent): void {
+          console.log((event.target as HTMLInputElement).checked);
+          this.props.onEdited(this.props.title, this.props.id, (event.target as HTMLInputElement).checked);
+        },
+
+        onTitleChange(event: InputEvent): void {
+          this.update({
+            title: (event.target as HTMLInputElement).value
+          });
+          this.props.onEdited(this.state.title, this.props.id, (event.target as HTMLInputElement).checked);
+        }
+
+      };
+    }
+    export default build;
+  </script>
+
+</todo-item>
